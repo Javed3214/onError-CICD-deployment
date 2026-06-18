@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e59fd241-7109-4145-baf5-24a5e6514915" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="onerrorraiserFlow" doc:id="3899e3b3-3863-4ffb-b492-ade6ff2117d5" >
+		<http:listener doc:name="Listener" doc:id="42d246d8-9190-4a71-9f9b-1c2bff8c48d3" config-ref="HTTP_Listener_config" path="/onErrorRaise"/>
+		<ee:transform doc:name="Transform Message" doc:id="2043080b-51ae-4c9e-bb91-f90aa6c0ba71" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="65b8566d-8687-4983-b223-414e38e65255" >
+			<when expression='#[payload != "ethopianflight"]'>
+				<raise-error doc:name="Raise error" doc:id="c96e90c8-6d1e-40dd-b182-21be02ab6e91" type="AIRLINE : ETHOPIA"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="e5770d29-d26e-4229-9a45-6bbabb9074a9" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
